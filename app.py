@@ -1,6 +1,8 @@
 """
-Algorytm Grzeczności
-====================
+MLikołaj
+========
+
+ML = machine learning (uczenie maszynowe) + Mikołaj.
 
 Interaktywna aplikacja edukacyjna (Streamlit + scikit-learn) na stoisko wydziałowe.
 
@@ -39,7 +41,7 @@ from sklearn.preprocessing import StandardScaler
 
 # Konfiguracja strony musi być pierwszym wywołaniem Streamlita w skrypcie.
 st.set_page_config(
-    page_title="Algorytm Grzeczności",
+    page_title="MLikołaj",
     page_icon="🎄",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -591,8 +593,8 @@ def main() -> None:
     # --- Nagłówek -----------------------------------------------------------
     st.markdown(
         '<div class="naglowek"><div>'
-        '<p class="nadtytul">Edycja świąteczna · uczenie maszynowe</p>'
-        f'<div class="tytul">Algorytm Grzeczności {IKONA_GWIAZDA}</div>'
+        '<p class="nadtytul">Edycja świąteczna · ML, czyli machine learning</p>'
+        f'<div class="tytul">MLikołaj {IKONA_GWIAZDA}</div>'
         '<p class="podtytul">Model uczenia maszynowego przeanalizował zachowanie '
         f"{LICZBA_REKORDOW} uczniów. Ustaw swoje parametry i sprawdź, czy według "
         "algorytmu czeka Cię prezent, czy rózga.</p>"

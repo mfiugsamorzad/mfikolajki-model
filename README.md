@@ -1,4 +1,7 @@
-# Algorytm Grzeczności
+# MLikołaj
+
+**ML** to skrót od *machine learning*, czyli uczenie maszynowe. MLikołaj to Mikołaj,
+który o prezentach decyduje za pomocą uczenia maszynowego.
 
 Interaktywna aplikacja pokazująca uczniom szkół podstawowych i średnich, jak działa
 uczenie maszynowe. Uczeń ustawia suwakami swoje „zachowanie”, a model na bieżąco
