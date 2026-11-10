@@ -35,25 +35,45 @@ from sklearn.preprocessing import StandardScaler
 # Konfiguracja strony musi być pierwszym wywołaniem Streamlita w skrypcie.
 st.set_page_config(
     page_title="Algorytm Grzeczności",
-    page_icon="◆",
+    page_icon="🎄",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# Paleta kolorów – trzymamy ją w jednym miejscu, żeby UI i wykresy były spójne.
-KOLOR_TLO = "#0E1117"        # tło całej aplikacji
-KOLOR_PANEL = "#161B22"      # tło „kart” (paneli)
-KOLOR_RAMKA = "#262C36"      # delikatne obramowania i siatka wykresów
-KOLOR_TEKST = "#E6EDF3"      # główny tekst
-KOLOR_TEKST_2 = "#8B949E"    # tekst pomocniczy (opisy, podpisy osi)
-KOLOR_ZIELONY = "#2EA043"    # „prezent” / wpływ dodatni
-KOLOR_POMARANCZ = "#F0883E"  # „rózga” / wpływ ujemny
-KOLOR_NIEBIESKI = "#58A6FF"  # akcent interfejsu (suwaki, przyciski)
-KOLOR_ZLOTY = "#E3B341"      # wynik „na granicy”
+# Paleta kolorów – świąteczna: ciemna zieleń świerku, bordo i złoto.
+# Trzymamy ją w jednym miejscu, żeby UI i wykresy były spójne.
+KOLOR_TLO = "#0A1C15"        # tło całej aplikacji (ciemny świerk)
+KOLOR_TLO_2 = "#12352A"      # jaśniejsza zieleń do delikatnej poświaty u góry strony
+KOLOR_PANEL = "#10271E"      # tło „kart” (paneli)
+KOLOR_RAMKA = "#24463A"      # delikatne obramowania i siatka wykresów
+KOLOR_TEKST = "#F4EEE2"      # główny tekst (ciepła, kremowa biel)
+KOLOR_TEKST_2 = "#A7B8AD"    # tekst pomocniczy (opisy, podpisy osi)
+KOLOR_ZIELONY = "#5CBF80"    # „prezent” / wpływ dodatni (jasna zieleń choinki)
+KOLOR_BORDO = "#C2405A"      # „rózga” / wpływ ujemny (bordo, rozjaśnione dla czytelności)
+KOLOR_BORDO_CIEMNE = "#7A1F33"  # głębokie bordo do wstążek i hover
+KOLOR_ZLOTY = "#E2B04A"      # akcent interfejsu (suwaki, przyciski) i wynik „na granicy”
 
 # Ziarno losowości – dzięki niemu dane i model są za każdym razem identyczne.
 ZIARNO = 42
 LICZBA_REKORDOW = 1000
+
+# Proste, liniowe ikony SVG (kolor dziedziczą z CSS przez „currentColor”).
+IKONA_GWIAZDA = (
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '
+    'stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 '
+    '2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>'
+)
+IKONA_PREZENT = (
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '
+    'stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" '
+    'height="4" rx="1"/><path d="M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8M12 8v13"/>'
+    '<path d="M12 8C10.5 4.5 7 4 7 6.5S10 8 12 8zM12 8c1.5-3.5 5-4 5-1.5S14 8 12 8z"/></svg>'
+)
+IKONA_ROZGA = (
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '
+    'stroke-linecap="round"><path d="M12 21V4M12 21L6.5 6M12 21l5.5-15M12 13l-2.5-3'
+    'M12 9l2.5-2.5M8.5 11.5 6.5 11M15.6 11.5l2-.8"/><path d="M9.6 17.5h4.8"/></svg>'
+)
 
 # Opis cech: klucz techniczny -> czytelna nazwa wyświetlana w interfejsie.
 CECHY = {
@@ -83,10 +103,56 @@ def wstrzyknij_css() -> None:
             font-family: 'DM Sans', sans-serif !important;
         }}
 
-        /* Ciemne tło aplikacji */
+        /* Ciemne, świerkowe tło z delikatną poświatą u góry */
         .stApp {{
-            background-color: {KOLOR_TLO};
+            background: radial-gradient(ellipse 90% 55% at 50% 0%, {KOLOR_TLO_2} 0%, {KOLOR_TLO} 70%);
+            background-attachment: fixed;
             color: {KOLOR_TEKST};
+        }}
+
+        /* Padający śnieg – czysty CSS: kilka warstw drobnych kropek przesuwanych w dół.
+           pointer-events: none sprawia, że śnieg nie blokuje kliknięć w suwaki. */
+        .stApp::before {{
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.5;
+            background-image:
+                radial-gradient(2.6px 2.6px at 20px 30px, #fff 50%, transparent 51%),
+                radial-gradient(2px 2px at 140px 90px, #fff 50%, transparent 51%),
+                radial-gradient(3px 3px at 260px 160px, #fff 50%, transparent 51%),
+                radial-gradient(2.2px 2.2px at 80px 220px, #fff 50%, transparent 51%),
+                radial-gradient(1.8px 1.8px at 200px 260px, #fff 50%, transparent 51%);
+            background-size: 300px 300px;
+            animation: snieg 22s linear infinite;
+        }}
+        .stApp::after {{
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.3;
+            background-image:
+                radial-gradient(4px 4px at 60px 50px, #fff 50%, transparent 51%),
+                radial-gradient(3.2px 3.2px at 330px 210px, #fff 50%, transparent 51%),
+                radial-gradient(3.6px 3.6px at 190px 380px, #fff 50%, transparent 51%);
+            background-size: 420px 420px;
+            animation: snieg-wolny 34s linear infinite;
+        }}
+        @keyframes snieg {{
+            from {{ background-position: 0 0; }}
+            to   {{ background-position: 60px 300px; }}
+        }}
+        @keyframes snieg-wolny {{
+            from {{ background-position: 0 0; }}
+            to   {{ background-position: -80px 420px; }}
+        }}
+        /* Osoby z włączonym ograniczeniem animacji w systemie – śnieg stoi w miejscu */
+        @media (prefers-reduced-motion: reduce) {{
+            .stApp::before, .stApp::after {{ animation: none; }}
         }}
 
         /* Ukrycie domyślnego menu i stopki – czystszy wygląd na stoisku */
@@ -101,13 +167,58 @@ def wstrzyknij_css() -> None:
 
         /* Mały, techniczny nadtytuł nad nagłówkiem */
         .nadtytul {{
-            color: {KOLOR_NIEBIESKI};
+            color: {KOLOR_ZLOTY};
             font-size: 0.8rem;
             font-weight: 500;
             letter-spacing: 0.18em;
             text-transform: uppercase;
             margin-bottom: -0.4rem;
         }}
+
+        /* Tytuł z gwiazdką (jak na czubku choinki) */
+        .tytul {{
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: {KOLOR_TEKST};
+            margin: 0.2rem 0 0.4rem 0;
+            line-height: 1.1;
+        }}
+        .tytul svg {{
+            width: 2.4rem;
+            height: 2.4rem;
+            color: {KOLOR_ZLOTY};
+            filter: drop-shadow(0 0 10px rgba(226, 176, 74, 0.45));
+        }}
+
+        /* Ozdobny separator: złota linia z gwiazdką pośrodku */
+        .ornament {{
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 1.4rem 0 1.6rem 0;
+            color: {KOLOR_ZLOTY};
+        }}
+        .ornament::before, .ornament::after {{
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, {KOLOR_RAMKA} 15%, {KOLOR_ZLOTY}88 50%, {KOLOR_RAMKA} 85%, transparent);
+        }}
+        .ornament svg {{ width: 1.1rem; height: 1.1rem; }}
+
+        /* Stopka z życzeniami */
+        .stopka {{
+            text-align: center;
+            color: {KOLOR_TEKST_2};
+            font-size: 0.95rem;
+            letter-spacing: 0.04em;
+            padding-bottom: 1rem;
+        }}
+        .stopka b {{ color: {KOLOR_ZLOTY}; font-weight: 500; }}
 
         .podtytul {{
             color: {KOLOR_TEKST_2};
@@ -116,13 +227,37 @@ def wstrzyknij_css() -> None:
         }}
 
         /* Karta z dużym wynikiem procentowym */
+        /* Karta wyniku ozdobiona jak paczka: bordowa wstążka z złotym brzegiem */
         .karta-wyniku {{
+            position: relative;
+            overflow: hidden;
             background: {KOLOR_PANEL};
             border: 1px solid {KOLOR_RAMKA};
             border-radius: 14px;
             padding: 1.4rem 1.6rem 1.1rem 1.6rem;
             margin-bottom: 0.8rem;
         }}
+        .karta-wyniku::before {{
+            content: "";
+            position: absolute;
+            top: 0; bottom: 0;
+            right: calc(2.9rem - 8px);  /* środek wstążki = środek ikony */
+            width: 16px;
+            background: {KOLOR_BORDO_CIEMNE};
+            border-left: 1px solid {KOLOR_ZLOTY}66;
+            border-right: 1px solid {KOLOR_ZLOTY}66;
+        }}
+        .karta-wyniku .ikona {{
+            position: absolute;
+            top: 1.2rem; right: 1.4rem;
+            width: 3rem; height: 3rem;
+            padding: 0.45rem;
+            box-sizing: border-box;
+            background: {KOLOR_PANEL};
+            border: 1px solid {KOLOR_ZLOTY}88;
+            border-radius: 50%;
+        }}
+        .karta-wyniku .ikona svg {{ width: 100%; height: 100%; display: block; }}
         .karta-wyniku .etykieta {{
             color: {KOLOR_TEKST_2};
             font-size: 0.85rem;
@@ -140,10 +275,10 @@ def wstrzyknij_css() -> None:
             font-weight: 500;
         }}
 
-        /* Suwaki – niebieski akcent */
+        /* Suwaki – złoty akcent */
         div[data-baseweb="slider"] div[role="slider"] {{
-            background-color: {KOLOR_NIEBIESKI} !important;
-            border-color: {KOLOR_NIEBIESKI} !important;
+            background-color: {KOLOR_ZLOTY} !important;
+            border-color: {KOLOR_ZLOTY} !important;
             box-shadow: none !important;
         }}
 
@@ -156,15 +291,15 @@ def wstrzyknij_css() -> None:
         /* Przyciski (np. „Reset”) – obramowanie w kolorze akcentu */
         .stButton > button {{
             background: transparent;
-            color: {KOLOR_NIEBIESKI};
-            border: 1px solid {KOLOR_NIEBIESKI};
+            color: {KOLOR_ZLOTY};
+            border: 1px solid {KOLOR_ZLOTY};
             border-radius: 8px;
             font-weight: 500;
         }}
-        .stButton > button:hover {{
-            background: {KOLOR_NIEBIESKI};
-            color: {KOLOR_TLO};
-            border-color: {KOLOR_NIEBIESKI};
+        .stButton > button:hover, .stButton > button:focus {{
+            background: {KOLOR_BORDO_CIEMNE};
+            color: {KOLOR_TEKST};
+            border-color: {KOLOR_ZLOTY};
         }}
 
         /* Pasek postępu – grubszy, zaokrąglony, na ciemnym torze */
@@ -184,12 +319,23 @@ def wstrzyknij_css() -> None:
             border-radius: 14px;
         }}
 
+        /* Pole kodu (np. `scikit-learn`) w zieleni zamiast domyślnego szarego */
+        .stMarkdown code {{
+            background: {KOLOR_RAMKA};
+            color: {KOLOR_ZLOTY};
+        }}
+
         /* Cienka linia oddzielająca sekcje */
         hr {{ border-color: {KOLOR_RAMKA} !important; }}
         </style>
         """,
         unsafe_allow_html=True,
     )
+
+
+def ornament() -> None:
+    """Rysuje ozdobny separator sekcji (złota linia z gwiazdką)."""
+    st.markdown(f'<div class="ornament">{IKONA_GWIAZDA}</div>', unsafe_allow_html=True)
 
 
 def pokoloruj_pasek_postepu(kolor: str) -> None:
@@ -321,13 +467,13 @@ def wykres_slupkowy(wartosci: pd.Series, podpis_osi: str, format_liczb: str):
     """
     Rysuje poziomy wykres słupkowy:
     zielone słupki = wpływ dodatni (w stronę prezentu),
-    pomarańczowe = wpływ ujemny (w stronę rózgi).
+    bordowe = wpływ ujemny (w stronę rózgi).
     """
     # Font wykresu: DM Sans, jeśli jest zainstalowany w systemie (inaczej domyślny bezszeryfowy)
     plt.rcParams["font.family"] = FONT_WYKRESOW
 
     wartosci = wartosci.sort_values()
-    kolory = [KOLOR_ZIELONY if v >= 0 else KOLOR_POMARANCZ for v in wartosci]
+    kolory = [KOLOR_ZIELONY if v >= 0 else KOLOR_BORDO for v in wartosci]
 
     fig, ax = plt.subplots(figsize=(6.4, 2.9), dpi=150)
     przygotuj_os(fig, ax)
@@ -387,15 +533,18 @@ def main() -> None:
         st.session_state.setdefault(klucz, wartosc)
 
     # --- Nagłówek -----------------------------------------------------------
-    st.markdown('<p class="nadtytul">Uczenie maszynowe · demo</p>', unsafe_allow_html=True)
-    st.title("Algorytm Grzeczności")
+    st.markdown(
+        '<p class="nadtytul">Edycja świąteczna · uczenie maszynowe</p>'
+        f'<div class="tytul">Algorytm Grzeczności {IKONA_GWIAZDA}</div>',
+        unsafe_allow_html=True,
+    )
     st.markdown(
         '<p class="podtytul">Model uczenia maszynowego przeanalizował zachowanie '
         f"{LICZBA_REKORDOW} uczniów. Ustaw swoje parametry i sprawdź, czy według "
         "algorytmu czeka Cię prezent, czy rózga.</p>",
         unsafe_allow_html=True,
     )
-    st.divider()
+    ornament()
 
     # --- Układ dwóch kolumn: wejście (lewa) | wynik (prawa) -----------------
     kol_lewa, kol_prawa = st.columns([1, 1.15], gap="large")
@@ -444,11 +593,11 @@ def main() -> None:
 
     # Werdykt i kolor zależny od wyniku
     if p_prezent >= 0.65:
-        werdykt, kolor = "Prezent prawie pewny", KOLOR_ZIELONY
+        werdykt, kolor, ikona = "Prezent prawie pewny", KOLOR_ZIELONY, IKONA_PREZENT
     elif p_prezent >= 0.40:
-        werdykt, kolor = "Na granicy – wszystko się może zdarzyć", KOLOR_ZLOTY
+        werdykt, kolor, ikona = "Na granicy – wszystko się może zdarzyć", KOLOR_ZLOTY, IKONA_GWIAZDA
     else:
-        werdykt, kolor = "Uwaga: rośnie ryzyko rózgi", KOLOR_POMARANCZ
+        werdykt, kolor, ikona = "Uwaga: rośnie ryzyko rózgi", KOLOR_BORDO, IKONA_ROZGA
 
     # --- Wkład poszczególnych cech dla TEGO ucznia --------------------------
     # W regresji logistycznej: logit = wyraz_wolny + suma(waga_i * cecha_i_przeskalowana).
@@ -464,6 +613,7 @@ def main() -> None:
         st.markdown(
             f"""
             <div class="karta-wyniku">
+                <div class="ikona" style="color:{kolor}">{ikona}</div>
                 <div class="etykieta">Prawdopodobieństwo prezentu</div>
                 <div class="liczba" style="color:{kolor}">{procent}%</div>
                 <div class="werdykt" style="color:{kolor}">{werdykt}</div>
@@ -478,14 +628,14 @@ def main() -> None:
         st.markdown("##### Co wpłynęło na Twój wynik?")
         st.caption(
             "Wkład każdej cechy w porównaniu z przeciętnym uczniem. "
-            "Zielone przesuwają decyzję w stronę prezentu, pomarańczowe – w stronę rózgi."
+            "Zielone przesuwają decyzję w stronę prezentu, bordowe – w stronę rózgi."
         )
         fig = wykres_slupkowy(wklad, "wkład w decyzję (logit)", "+.2f")
         st.pyplot(fig, width="stretch")
         plt.close(fig)
 
     # --- Sekcja edukacyjna: globalne wagi modelu -----------------------------
-    st.divider()
+    ornament()
     kol_wykres, kol_opis = st.columns([1.15, 1], gap="large")
 
     with kol_wykres:
@@ -520,6 +670,14 @@ def main() -> None:
     with st.expander("Podejrzyj dane treningowe"):
         podglad = dane.rename(columns={**CECHY, "prezent": "Prezent (1) / Rózga (0)"})
         st.dataframe(podglad.head(50), width="stretch", hide_index=True)
+
+    # Stopka z życzeniami
+    ornament()
+    st.markdown(
+        '<p class="stopka">Wesołych Świąt i samych trafnych predykcji w Nowym Roku'
+        " <b>·</b> życzy zespół wydziału</p>",
+        unsafe_allow_html=True,
+    )
 
 
 # Punkt wejścia skryptu
