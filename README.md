@@ -7,6 +7,8 @@ o wyniku.
 
 Aplikacja powstała na stoisko wydziałowe. Używa Streamlita i scikit-learn.
 
+**Autor:** Rada Samorządu Studenckiego WMFI UG
+
 ![Zrzut ekranu aplikacji](docs/zrzut-ekranu.png)
 
 ## Spis treści
@@ -37,6 +39,8 @@ Aplikacja powstała na stoisko wydziałowe. Używa Streamlita i scikit-learn.
   oraz wykres globalnych wag modelu.
 - **Sekcja „Pod maską”:** typ modelu, dokładność na danych testowych, wzór funkcji
   sigmoidalnej i podgląd danych treningowych.
+- **Logo autora:** małe logo Rady Samorządu Studenckiego WMFI UG w nagłówku (na wąskich
+  ekranach ukryte) i w stopce z podpisem autora.
 - **Przycisk „Reset (następna osoba)”:** przywraca ustawienia domyślne dla kolejnego gościa.
 - **Świąteczny wygląd:** ciemna zieleń świerku, bordo i złoto, font DM Sans,
   delikatnie padający śnieg (czysty CSS), złote gwiazdki jako separatory sekcji
@@ -125,6 +129,8 @@ kolejne zmiany suwaków działają natychmiast.
 .
 ├── app.py                  # cała aplikacja: dane, model, interfejs, wykresy
 ├── requirements.txt        # zależności Pythona
+├── assets/
+│   └── logo_rss.png        # białe logo RSS WMFI UG na przezroczystym tle
 ├── .streamlit/
 │   └── config.toml         # ciemny, świąteczny motyw bazowy i kolor akcentu
 └── docs/
@@ -142,6 +148,7 @@ Wszystko znajduje się w `app.py`:
 | Kolory | stałe `KOLOR_*` na początku pliku (pamiętaj też o `.streamlit/config.toml`) |
 | Śnieg (gęstość, prędkość, widoczność) | reguły `.stApp::before` / `.stApp::after` w funkcji `wstrzyknij_css` |
 | Ikony (gwiazdka, prezent, rózga) | stałe `IKONA_*` (SVG) |
+| Autor i logo | stałe `AUTOR` i `SCIEZKA_LOGO` (bez pliku logo aplikacja działa, tylko go nie pokazuje) |
 | Progi werdyktów | blok `if p_prezent >= 0.65` w funkcji `main` |
 | Wartości startowe suwaków | słownik `DOMYSLNE` |
 | Nazwy cech w interfejsie | słownik `CECHY` |
