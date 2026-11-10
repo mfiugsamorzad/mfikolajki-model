@@ -38,8 +38,10 @@ Aplikacja powstała na stoisko wydziałowe. Używa Streamlita i scikit-learn.
 - **Sekcja „Pod maską”:** typ modelu, dokładność na danych testowych, wzór funkcji
   sigmoidalnej i podgląd danych treningowych.
 - **Przycisk „Reset (następna osoba)”:** przywraca ustawienia domyślne dla kolejnego gościa.
-- **Wygląd:** ciemny motyw, font DM Sans, kolory akcentowe: zielony, złoty,
-  pomarańczowy i niebieski.
+- **Świąteczny wygląd:** ciemna zieleń świerku, bordo i złoto, font DM Sans,
+  delikatnie padający śnieg (czysty CSS), złote gwiazdki jako separatory sekcji
+  i karta wyniku przewiązana wstążką jak paczka. Ikona na karcie zmienia się
+  zależnie od wyniku: prezent, gwiazdka albo rózga.
 
 ## Szybki start
 
@@ -104,13 +106,13 @@ kolejne zmiany suwaków działają natychmiast.
 |---|---|---|
 | 65% i więcej | Prezent prawie pewny | zielony |
 | 40–64% | Na granicy | złoty |
-| poniżej 40% | Rośnie ryzyko rózgi | pomarańczowy |
+| poniżej 40% | Rośnie ryzyko rózgi | bordowy |
 
 ## Jak czytać wykresy
 
 - **„Co wpłynęło na Twój wynik?”:** wkład każdej cechy w decyzję dla aktualnych
   ustawień, **w porównaniu z przeciętnym uczniem** ze zbioru danych.
-  - Zielony słupek przesuwa decyzję w stronę prezentu, pomarańczowy w stronę rózgi.
+  - Zielony słupek przesuwa decyzję w stronę prezentu, bordowy w stronę rózgi.
   - Przykład: mała liczba odpisanych zadań daje zielony słupek, bo to mniej niż średnia.
 - **„Jak myśli algorytm? Wagi modelu”:** współczynniki regresji dla cech
   standaryzowanych. Mówią, jak model ocenia każdą cechę niezależnie od użytkownika.
@@ -124,7 +126,7 @@ kolejne zmiany suwaków działają natychmiast.
 ├── app.py                  # cała aplikacja: dane, model, interfejs, wykresy
 ├── requirements.txt        # zależności Pythona
 ├── .streamlit/
-│   └── config.toml         # ciemny motyw bazowy i kolor akcentu
+│   └── config.toml         # ciemny, świąteczny motyw bazowy i kolor akcentu
 └── docs/
     └── zrzut-ekranu.png    # zrzut ekranu do README
 ```
@@ -137,7 +139,9 @@ Wszystko znajduje się w `app.py`:
 |---|---|
 | Siła wpływu cech na wynik | współczynniki `logit` w funkcji `wygeneruj_dane` |
 | Liczba rekordów, ziarno losowości | stałe `LICZBA_REKORDOW`, `ZIARNO` |
-| Kolory | stałe `KOLOR_*` na początku pliku |
+| Kolory | stałe `KOLOR_*` na początku pliku (pamiętaj też o `.streamlit/config.toml`) |
+| Śnieg (gęstość, prędkość, widoczność) | reguły `.stApp::before` / `.stApp::after` w funkcji `wstrzyknij_css` |
+| Ikony (gwiazdka, prezent, rózga) | stałe `IKONA_*` (SVG) |
 | Progi werdyktów | blok `if p_prezent >= 0.65` w funkcji `main` |
 | Wartości startowe suwaków | słownik `DOMYSLNE` |
 | Nazwy cech w interfejsie | słownik `CECHY` |
@@ -151,5 +155,7 @@ Wszystko znajduje się w `app.py`:
 - **Pytanie o dane i uprzedzenia modelu:** „Skąd model wie, że warzywa są dobre?”
   Odpowiedź: z danych, które mu daliśmy. Model jest tak dobry (i tak stronniczy),
   jak dane, na których się uczył.
+- **Animacja śniegu:** jeśli w systemie włączone jest ograniczenie animacji
+  („reduce motion”), śnieg zostaje nieruchomy.
 - **Internet:** font DM Sans pobiera się z Google Fonts. Bez dostępu do internetu aplikacja
   działa, ale przeglądarka użyje zwykłej czcionki bezszeryfowej.

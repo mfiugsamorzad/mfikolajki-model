@@ -1,10 +1,10 @@
-# Ciemny motyw bazowy Streamlita – reszta stylu jest wstrzykiwana w app.py
+# Ciemny, świąteczny motyw bazowy Streamlita – reszta stylu jest wstrzykiwana w app.py
 [theme]
 base = "dark"
-primaryColor = "#58A6FF"
-backgroundColor = "#0E1117"
-secondaryBackgroundColor = "#161B22"
-textColor = "#E6EDF3"
+primaryColor = "#E2B04A"
+backgroundColor = "#0A1C15"
+secondaryBackgroundColor = "#10271E"
+textColor = "#F4EEE2"
 
 [client]
 toolbarMode = "minimal"
