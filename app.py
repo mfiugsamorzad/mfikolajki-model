@@ -12,10 +12,15 @@ Co się tu dzieje?
    zamiast rózgi (klasa 0).
 4. Wykresy pokazują, JAK model podjął decyzję – czyli wagi poszczególnych cech.
 
+Autor: Rada Samorządu Studenckiego WMFI UG
+
 Uruchomienie:
     pip install -r requirements.txt
     streamlit run app.py
 """
+
+import base64
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
@@ -74,6 +79,10 @@ IKONA_ROZGA = (
     'stroke-linecap="round"><path d="M12 21V4M12 21L6.5 6M12 21l5.5-15M12 13l-2.5-3'
     'M12 9l2.5-2.5M8.5 11.5 6.5 11M15.6 11.5l2-.8"/><path d="M9.6 17.5h4.8"/></svg>'
 )
+
+# Autor aplikacji i ścieżka do logo (białe logo na przezroczystym tle – pasuje do ciemnego motywu)
+AUTOR = "Rada Samorządu Studenckiego WMFI UG"
+SCIEZKA_LOGO = Path(__file__).parent / "assets" / "logo_rss.png"
 
 # Opis cech: klucz techniczny -> czytelna nazwa wyświetlana w interfejsie.
 CECHY = {
@@ -220,6 +229,37 @@ def wstrzyknij_css() -> None:
         }}
         .stopka b {{ color: {KOLOR_ZLOTY}; font-weight: 500; }}
 
+        /* Nagłówek: tekst po lewej, małe logo autora po prawej */
+        .naglowek {{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+        }}
+        .logo-naglowek {{
+            height: 84px;
+            width: auto;
+            opacity: 0.9;
+            margin-top: 0.4rem;
+        }}
+        /* Na wąskich ekranach logo w nagłówku znika (zostaje w stopce) */
+        @media (max-width: 760px) {{
+            .logo-naglowek {{ display: none; }}
+        }}
+
+        /* Stopka: małe logo i podpis autora */
+        .autor {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            color: {KOLOR_TEKST_2};
+            font-size: 0.85rem;
+            margin-top: -0.4rem;
+            padding-bottom: 1.2rem;
+        }}
+        .logo-stopka {{ height: 36px; width: auto; opacity: 0.75; }}
+
         .podtytul {{
             color: {KOLOR_TEKST_2};
             font-size: 1.05rem;
@@ -331,6 +371,22 @@ def wstrzyknij_css() -> None:
         """,
         unsafe_allow_html=True,
     )
+
+
+@st.cache_data
+def logo_base64() -> str:
+    """Zwraca logo jako tekst base64 (do osadzenia w HTML) albo pusty tekst, gdy pliku brak."""
+    if not SCIEZKA_LOGO.exists():
+        return ""
+    return base64.b64encode(SCIEZKA_LOGO.read_bytes()).decode()
+
+
+def logo_html(klasa: str) -> str:
+    """Znacznik <img> z logo autora (pusty, jeśli pliku z logo nie ma)."""
+    dane = logo_base64()
+    if not dane:
+        return ""
+    return f'<img class="{klasa}" src="data:image/png;base64,{dane}" alt="Logo: {AUTOR}">'
 
 
 def ornament() -> None:
@@ -534,14 +590,13 @@ def main() -> None:
 
     # --- Nagłówek -----------------------------------------------------------
     st.markdown(
+        '<div class="naglowek"><div>'
         '<p class="nadtytul">Edycja świąteczna · uczenie maszynowe</p>'
-        f'<div class="tytul">Algorytm Grzeczności {IKONA_GWIAZDA}</div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
+        f'<div class="tytul">Algorytm Grzeczności {IKONA_GWIAZDA}</div>'
         '<p class="podtytul">Model uczenia maszynowego przeanalizował zachowanie '
         f"{LICZBA_REKORDOW} uczniów. Ustaw swoje parametry i sprawdź, czy według "
-        "algorytmu czeka Cię prezent, czy rózga.</p>",
+        "algorytmu czeka Cię prezent, czy rózga.</p>"
+        f"</div>{logo_html('logo-naglowek')}</div>",
         unsafe_allow_html=True,
     )
     ornament()
@@ -674,8 +729,8 @@ def main() -> None:
     # Stopka z życzeniami
     ornament()
     st.markdown(
-        '<p class="stopka">Wesołych Świąt i samych trafnych predykcji w Nowym Roku'
-        " <b>·</b> życzy zespół wydziału</p>",
+        '<p class="stopka">Wesołych Świąt i samych trafnych predykcji w Nowym Roku!</p>'
+        f'<div class="autor">{logo_html("logo-stopka")}<span>Autor: {AUTOR}</span></div>',
         unsafe_allow_html=True,
     )
 
